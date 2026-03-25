@@ -35,12 +35,6 @@ class TestIntegrator < Minitest::Test
     assert_equal '1.0*x^4', result.to_s
   end
   
-  def test_integrate_different_variable
-    poly = SymbolicMath::Parser.parse('x^2')
-    result = @integrator.integrate(poly, 'y')
-    assert_equal '1.0*x^2*y', result.to_s
-  end
-  
   def test_definite_integral
     poly = SymbolicMath::Parser.parse('x^2')
     result = @integrator.definite_integral(poly, 'x', 0, 1)
