@@ -24,9 +24,16 @@ module SymbolicMath
     end
     
     def integral
+      # Константа: ∫ 5 dx = 5*x
+      if @variable.nil?
+        return Term.new(@coefficient, 'x', 1)
+      end
+      
+      # ∫ x^n dx = x^(n+1)/(n+1) для n != -1
       if @exponent == -1
         raise "Integration of 1/x not supported yet"
       end
+      
       Term.new(@coefficient / (@exponent + 1), @variable, @exponent + 1)
     end
     
