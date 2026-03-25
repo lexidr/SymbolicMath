@@ -17,4 +17,7 @@ module SymbolicMath
   def self.solve(equation, variable)
     Solver.solve(equation, variable)
   end
+  def self.parse_with_brackets(string)
+    Expander.expand(string)
+  end
 end

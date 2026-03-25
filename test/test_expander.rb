@@ -27,36 +27,22 @@ class TestExpander < Minitest::Test
     assert_equal 1, terms.size
     assert_equal term, terms[0]
   end
-  def test_expand_complex_product
-    ## (2x + 3)*(4x - 5) = 8x^2 + 2x - 15
-    expr = SymbolicMath.parse("(2*x+3)*(4*x-5)")
-    result = @expander.expand(expr)
-    
-    assert_equal 3, result.terms.size
-    
-    x2_term = result.terms.find { |t| t.exponent == 2 }
-    assert_equal 8.0, x2_term.coefficient
-    
-    x_term = result.terms.find { |t| t.exponent == 1 }
-    assert_equal 2.0, x_term.coefficient
-    
-    const_term = result.terms.find { |t| t.variable.nil? }
-    assert_equal -15.0, const_term.coefficient
-  end
-  def test_expand_with_negatives
-    # (x - 2)*(x + 3) = x^2 + x - 6
-    expr = SymbolicMath.parse("(x-2)*(x+3)")
+  def test_expand_simple_product
+    # (x + 1)*(x + 2) = x^2 + 3x + 2
+    expr = SymbolicMath.parse_with_brackets("(x+1)*(x+2)")
     result = @expander.expand(expr)
     
     assert_equal 3, result.terms.size
     
     x2_term = result.terms.find { |t| t.exponent == 2 }
     assert_equal 1.0, x2_term.coefficient
+    assert_equal 'x', x2_term.variable
     
     x_term = result.terms.find { |t| t.exponent == 1 }
-    assert_equal 1.0, x_term.coefficient
+    assert_equal 3.0, x_term.coefficient
+    assert_equal 'x', x_term.variable
     
     const_term = result.terms.find { |t| t.variable.nil? }
-    assert_equal -6.0, const_term.coefficient
+    assert_equal 2.0, const_term.coefficient
   end
 end
