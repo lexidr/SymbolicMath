@@ -27,7 +27,6 @@ module SymbolicMath
     
     # Решение линейного уравнения ax + b = 0
     def self.solve_linear(equation, variable)
-
       normalized = normalize_equation(equation)
       
       # Находим коэффициенты a и b
@@ -55,6 +54,50 @@ module SymbolicMath
       [solution]
     end
     
+    # Решение квадратного уравнения ax^2 + bx + c = 0
+    def self.solve_quadratic(equation, variable)
+      normalized = normalize_equation(equation)
+      
+      # Находим коэффициенты a, b, c
+      a = 0.0
+      b = 0.0
+      c = 0.0
+      
+      normalized.terms.each do |term|
+        if term.variable == variable
+          case term.exponent
+          when 2
+            a += term.coefficient
+          when 1
+            b += term.coefficient
+          end
+        elsif term.variable.nil?
+          c += term.coefficient
+        end
+      end
+      
+      # Проверяем, что это квадратное уравнение
+      if a == 0
+        return solve_linear(equation, variable)
+      end
+      
+      # Вычисляем дискриминант
+      discriminant = b**2 - 4 * a * c
+      
+      if discriminant > 0
+        sqrt_d = Math.sqrt(discriminant)
+        x1 = (-b + sqrt_d) / (2 * a)
+        x2 = (-b - sqrt_d) / (2 * a)
+        # Сортируем корни по возрастанию
+        [x1, x2].sort
+      elsif discriminant == 0
+        x = -b / (2 * a)
+        [x]
+      else
+        :no_real_roots
+      end
+    end
+    
     private
     
     def self.parse_equation(str)
@@ -80,9 +123,8 @@ module SymbolicMath
       Polynomial.new(all_terms)
     end
     
-    # убирает константы в правую часть
+    # Нормализует уравнение
     def self.normalize_equation(equation)
-      # Если уравнение уже в виде polynomial = 0, просто возвращаем
       equation
     end
     
@@ -100,7 +142,7 @@ module SymbolicMath
     # Решение уравнения-константы
     def self.solve_constant(equation)
       if equation.terms.empty? || equation.to_s == '0'
-        return :all_reals
+        return :infinite_solutions
       else
         return :no_solution
       end
