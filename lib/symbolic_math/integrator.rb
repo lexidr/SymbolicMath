@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'polynomial'
 require_relative 'term'
 
@@ -16,7 +18,7 @@ module SymbolicMath
         raise "Unsupported expression type: #{expr.class}"
       end
     end
-    
+
     # Интегрирование полинома (суммы членов)
     def self.integrate_polynomial(poly, variable)
       new_terms = poly.terms.map do |term|
@@ -24,46 +26,48 @@ module SymbolicMath
       end
       Polynomial.new(new_terms)
     end
-    
+
     # Интегрирование отдельного члена
     def self.integrate_term(term, variable)
       # Если переменная не совпадает, интегрируем как константу
-      if term.variable != variable && term.variable != nil
+      if term.variable != variable && !term.variable.nil?
         return Term.new(term.coefficient, variable, 1)
       end
-      
+
       # Если это константа (нет переменной)
       if term.variable.nil?
         return Term.new(term.coefficient, variable, 1)
       end
-      
+
+      # ∫ x^n dx = x^(n+1)/(n+1) для n != -1
       if term.exponent == -1
         raise "Integration of 1/x not supported yet"
       end
-      
-      term.integral
+
+      # Используем метод integral из класса Term, передаём переменную
+      term.integral(variable)
     end
-    
-    # Определённое интегрирование (дополнительно)
+
+    # Определённое интегрирование
     def self.definite_integral(expr, variable, lower, upper)
       indefinite = integrate(expr, variable)
-      
+
       # Подставляем верхний и нижний пределы
       upper_value = substitute_value(indefinite, variable, upper)
       lower_value = substitute_value(indefinite, variable, lower)
-      
+
       upper_value - lower_value
     end
-    
+
     private
-    
+
     def self.substitute_value(expr, variable, value)
       case expr
       when Polynomial
         expr.substitute(variable, value)
       when Term
         if expr.variable == variable
-          expr.coefficient * (value ** expr.exponent)
+          expr.coefficient * (value**expr.exponent)
         else
           expr.coefficient * value
         end
